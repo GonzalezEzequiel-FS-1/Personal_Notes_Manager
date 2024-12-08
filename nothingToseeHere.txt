@@ -1,3 +1,0 @@
-PORT=3000
-aws_access_key_id = "AKIAXZ5NGMCKFBGWN6SN"
-aws_secret_access_key = "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"
