@@ -1,3 +1,0 @@
-PORT=3000
-aws access key id = "AKIAXZ5NGMCKFBGWN6SN"
-aws secret access key = "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"
