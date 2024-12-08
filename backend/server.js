@@ -1,19 +1,25 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const dotenv = require('dotenv');
+const morgan = require('morgan');
+const routes = require('./src/routes/index');
 
-const dotenv = require('dotenv')
-dotenv.config()
+dotenv.config();
+
+app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
-const morgan = require('morgan')
-const routes = require('./src/routes/index')
 
-
-app.use("/api", routes)
-app.use(cors());
 app.use(morgan('dev'));
 
+app.use(cors({
+    origin: 'http://localhost:5173', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }));
+
+app.use("/api", routes)
 app.listen(PORT, ()=>{
     console.log(`Server Running on Port: ${PORT}`)
 })

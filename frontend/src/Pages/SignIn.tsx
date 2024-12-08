@@ -3,15 +3,20 @@ import InputField from "../Components/InputField";
 import { useState } from "react";
 import Button from "../Components/Button";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+
+const API_URL = 'http://localhost:3000/api/signin'
+
 export default function SignIn() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [userPass, setUserPass] = useState("");
   const [error, setError] = useState("");
-  const handleNavigateSignin=(e: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>{
-        e.preventDefault()
-        navigate('/')
-  }
+  const handleNavigateSignin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    navigate('/signup');
+  };
+
   const submitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -19,16 +24,33 @@ export default function SignIn() {
       if (!userName || !userPass) {
         return setError("Please fill all required fields");
       }
-      console.log(userName, userPass);
+
+      
+      const response = await axios.post(`${API_URL}`, {
+        userName,
+        userPassword: userPass,
+      },{
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.data.success) {
+        navigate('/home'); 
+      }
     } catch (err: any) {
-      setError(err.message);
+      if (err.response) {
+        setError(err.response.data.message || 'Something went wrong');
+      } else {
+        setError("Network error or server unavailable");
+      }
     }
   };
 
   return (
     <Container>
       <FormContainer onSubmit={submitForm}>
-        <Text>Create An Account</Text>
+        <Text>Sign in to your Account</Text>
         <Error>{error}</Error>
         <InputField
           type="text"
@@ -49,8 +71,8 @@ export default function SignIn() {
           placeholder="Password"
         />
         <ButtonContainer>
-          <Button type="submit" text="Sign In"></Button>
-          <Button onClick={handleNavigateSignin} type="button" text="Sign Up"></Button>
+          <Button type="submit" text="Sign In" />
+          <Button onClick={handleNavigateSignin} type="button" text="Sign Up" />
         </ButtonContainer>
         <Disclaimer>
           By signing up, you agree to our Terms of Service and Privacy Policy.
@@ -60,6 +82,7 @@ export default function SignIn() {
     </Container>
   );
 }
+
 const Container = styled.div`
   width: 100%;
   height: 100vh;
@@ -68,6 +91,7 @@ const Container = styled.div`
   justify-content: center;
   overflow: hidden;
 `;
+
 const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
@@ -82,12 +106,14 @@ const FormContainer = styled.form`
   border-radius: 20px;
   box-shadow: 5px 5px 5px #cccccc40;
 `;
+
 const Error = styled.p`
   color: red;
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
   font-size: 2rem;
 `;
+
 const Text = styled.p`
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   font-size: 2rem;
@@ -104,10 +130,11 @@ const Disclaimer = styled.p`
   color: #f1f1f190;
   letter-spacing: 0.15rem;
 `;
+
 const ButtonContainer = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap:1rem;
+  gap: 1rem;
 `;

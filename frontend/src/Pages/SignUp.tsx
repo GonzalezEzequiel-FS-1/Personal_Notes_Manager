@@ -3,8 +3,9 @@ import InputField from "../Components/InputField";
 import { useState } from "react";
 import Button from "../Components/Button";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 const API_URL = "http://localhost:3000/api/signup"
+
 
 export default function SignUp() {
   const navigate = useNavigate()
@@ -20,6 +21,7 @@ export default function SignUp() {
       return true;
     }
   };
+
   const handleNavigateSignin=(e: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>{
         e.preventDefault()
         navigate('/signin')
@@ -33,20 +35,26 @@ export default function SignUp() {
       }
       if (!checkPasswords()) {
         return setError("Passwords Did Not Match");
-      }else{
-        await axios.post(`${API_URL}`,{
-          userName,
-          userEmail,
-          userPass
-        })
-        
-        
       }
       
+      
+      
+      await axios.post(`${API_URL}`, {
+        userName,
+        userEmail,
+        userPass 
+      },{
+        headers: {
+          'Content-Type': 'application/json', 
+        }
+      }
+    );
+  
     } catch (err: any) {
       setError(err.message);
     }
   };
+  
 
   return (
     <Container>
