@@ -1,9 +1,10 @@
 import "./App.css";
 import styled from "styled-components";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./Pages/home";
+import Home from "./Pages/Home";
 import FourOhFour from "./Pages/FourOhFour";
 import SignUp from "./Pages/SignUp";
+import SignIn from "./Pages/SignIn";
 
 
 function App() {
@@ -11,9 +12,10 @@ function App() {
     <Container>
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<SignUp />} />
+          <Route path="/signin" element={<SignIn />} />
           <Route path="*" element={<FourOhFour />} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route path="/home" element={<Home />} />
         </Routes>
       </Router>
     </Container>

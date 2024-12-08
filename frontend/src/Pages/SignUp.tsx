@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import InputField from "../Components/inputField";
+import InputField from "../Components/InputField";
 import { useState } from "react";
 import Button from "../Components/Button";
 import { useNavigate } from "react-router-dom";
@@ -80,7 +80,7 @@ export default function SignUp() {
         />
         <ButtonContainer>
           <Button type="submit" text="Sign Up"></Button>
-          <Button onClick={handleNavigateSignin} type="submit" text="Sign In"></Button>
+          <Button onClick={handleNavigateSignin} type="button" text="Sign In"></Button>
         </ButtonContainer>
         <Disclaimer>
           By signing up, you agree to our Terms of Service and Privacy Policy.
