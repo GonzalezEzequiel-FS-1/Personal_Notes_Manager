@@ -4,17 +4,20 @@ import { useState } from "react";
 import Button from "../Components/Button";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { useDispatch } from "react-redux";
+import { setUser } from "../features/usersSlice";
 
 const API_URL = 'http://localhost:3000/api/signin'
 
 export default function SignIn() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [userPass, setUserPass] = useState("");
   const [error, setError] = useState("");
   const handleNavigateSignin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    navigate('/signup');
+    navigate('/');
   };
 
   const submitForm = async (e: React.FormEvent) => {
@@ -36,6 +39,8 @@ export default function SignIn() {
       });
 
       if (response.data.success) {
+        console.log('Saving Data to store')
+        dispatch(setUser({userName}));
         navigate('/home'); 
       }
     } catch (err: any) {

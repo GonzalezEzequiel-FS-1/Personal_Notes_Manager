@@ -8,10 +8,10 @@ export default function NotePad() {
         <SideBar />
       <SideContainer>
         <TitleContainer>
-          <h1>hghg</h1>
+          
         </TitleContainer>
         <NoteContainer>
-          <h1>jhh</h1>
+          
         </NoteContainer>
       </SideContainer>
     </Container>
@@ -23,12 +23,14 @@ const TitleContainer = styled.div`
   background-color: #222222;
   border-radius: 20px;
   margin-bottom:2rem ;
+  box-shadow: 5px 5px 5px #55555550;
 `;
 const NoteContainer = styled.div`
   width: 100%;
   height: 80%;
   background-color: #222222;
   border-radius: 20px;
+  box-shadow: 5px 5px 5px #55555550;
 `;
 const Container = styled.div`
   height: 100%;

@@ -4,10 +4,13 @@ import { useState } from "react";
 import Button from "../Components/Button";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-const API_URL = "http://localhost:3000/api/signup"
+const API_URL = "http://localhost:3000/api/signup";
+import { useDispatch } from "react-redux";
+import { setUser } from "../features/usersSlice";
 
 
 export default function SignUp() {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -39,7 +42,7 @@ export default function SignUp() {
       
       
       
-      await axios.post(`${API_URL}`, {
+      const response = await axios.post(`${API_URL}`, {
         userName,
         userEmail,
         userPass 
@@ -49,6 +52,11 @@ export default function SignUp() {
         }
       }
     );
+    if (response.data.success) {
+      console.log('Saving Data to store')
+      dispatch(setUser({userName}));
+      navigate('/home'); 
+    }
   
     } catch (err: any) {
       setError(err.message);
