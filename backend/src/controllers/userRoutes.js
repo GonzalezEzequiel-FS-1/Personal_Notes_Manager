@@ -1,5 +1,116 @@
 const dynamoDB = require("../db/DynamoSetUp");
 const bcrypt = require('bcryptjs')
+const User = require('../models/UserModel')
+const {checkUser} = require('../utils/checkUser') 
+const createUser = async (req, res) => {
+    console.log('Checking if user name, password, and email reached the server');
+    const { userName, userEmail, userPass } = req.body;
+
+    if (!userName || !userEmail || !userPass) {
+        console.log('Incomplete User Data');
+        return res.status(400).json({
+            success: false,
+            message: 'Please Complete all Fields'
+        });
+    }
+
+    console.log('UserName, Password, and Email found, moving on');
+    console.log('Hashing')
+    const hashedPass = await bcrypt.hash(userPass, 10);
+
+    try {
+        console.log("Checking if the user exists on DB")
+        const userExists = await checkUser(userName)
+        if(userExists === false){
+            console.log(`User with ID ${userName} already exists`)
+            return res.status(400).json({
+                success:false,
+                message:`User with ID ${userName} already exists`
+            })
+        }
+        
+        console.log("Setting user with Dynamoose")
+        const newUser = await User.create({
+            name: userName,
+            email: userEmail,
+            password: hashedPass
+        });
+        
+       await newUser.save();
+       console.log(`User Created: ${JSON.stringify(newUser)}`)
+        
+        console.log('Successfully completed operation');
+
+        return res.status(200).json({
+            success: true,
+            User_Data: newUser
+        });
+    } catch (error) {
+        console.log(`Error creating user: ${error.stack}`);
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
+const signin = async (req, res) => {
+    const { userName, userPassword } = req.body;
+
+    if (!userName || !userPassword) {
+        return res.status(400).json({
+            success: false,
+            message: "Incomplete data provided"
+        });
+    }
+
+    try {
+        const userData = await User.get(userName);        
+        if (!userData) {
+            return res.status(404).json({
+                success: false,
+                message: 'User Not Found'
+            });
+        }
+
+        const storedPassword = userData.password;
+
+        if (!storedPassword) {
+            return res.status(404).json({
+                success: false,
+                message: 'Password Not Found for User'
+            });
+        }
+
+        const isPasswordValid = await bcrypt.compare(userPassword, storedPassword);
+        if (!isPasswordValid) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid Credentials'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'User Authenticated Successfully'
+        });
+
+    } catch (error) {
+        console.log(`Error Authenticating User: ${error.stack}`);
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+module.exports = {
+    createUser,
+    signin
+};
+
+
+
+/*
 
 const createUser = async (req, res) => {
     console.log('Checking if user name, password, and email reached the server');
@@ -48,6 +159,9 @@ const createUser = async (req, res) => {
         });
     }
 }
+
+
+
 const signin = async (req, res) => {
     const { userName, userPassword } = req.body;
 
@@ -106,7 +220,4 @@ const signin = async (req, res) => {
     }
 };
 
-module.exports = {
-    createUser,
-    signin
-};
+*/

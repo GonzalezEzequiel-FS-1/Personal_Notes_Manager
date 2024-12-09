@@ -59,7 +59,7 @@ export default function SignUp() {
     }
   
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response.data.message);
     }
   };
   
@@ -144,6 +144,7 @@ const Error = styled.p`
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
   font-size: 2rem;
+  text-transform: capitalize;
 `;
 const Text = styled.p`
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;

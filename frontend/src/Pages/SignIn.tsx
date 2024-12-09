@@ -45,7 +45,7 @@ export default function SignIn() {
       }
     } catch (err: any) {
       if (err.response) {
-        setError(err.response.data.message || 'Something went wrong');
+        setError(err.response.data.message || err.response);
       } else {
         setError("Network error or server unavailable");
       }
