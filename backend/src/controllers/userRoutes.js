@@ -24,7 +24,7 @@ const createUser = async (req, res) => {
             Item: {
                 UserName:userName, 
                 userEmail,
-                userPassword,
+                userPassword:hashedPass,
                 createdAt: new Date().toISOString()
             }
         };
