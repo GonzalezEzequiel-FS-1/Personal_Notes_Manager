@@ -3,6 +3,7 @@ import Button from "./Button";
 import { useDispatch } from "react-redux";
 import { clearUser } from "../features/usersSlice";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function SideBar() {
   const navigate = useNavigate()
@@ -14,12 +15,23 @@ export default function SideBar() {
     console.log('user cleared')
     navigate('/signin')
   };
+  const printSessionData = async () =>{
+    try{
+    const data = await axios.post("http://localhost:3000/api/logout")
+    console.log(JSON.stringify(data))
+    }catch(error: any){
+      console.log(error.message)
+    }
+  }
   return (
     <Container>
       <DataCont></DataCont>
       <DataCont></DataCont>
       <DataCont>
+
         <Button onClick={handleLogout} type="button" text="Log Out" />
+        <Button onClick={printSessionData} type="button" text="PrintData" />
+
       </DataCont>
     </Container>
   );

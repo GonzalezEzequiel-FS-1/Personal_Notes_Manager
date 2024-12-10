@@ -1,7 +1,12 @@
 const dynamoDB = require("../db/DynamoSetUp");
 const bcrypt = require('bcryptjs')
 const User = require('../models/UserModel')
-const {checkUser} = require('../utils/checkUser') 
+const {checkUser} = require('../utils/checkUser'); 
+const createSession = require("./sessionContollers/Sessions");
+const { v4:uuidv4 } = require('uuid');
+const session = require("express-session");
+const ttl = 3600
+
 const createUser = async (req, res) => {
     console.log('Checking if user name, password, and email reached the server');
     const { userName, userEmail, userPass } = req.body;
@@ -38,8 +43,21 @@ const createUser = async (req, res) => {
         
        await newUser.save();
        console.log(`User Created: ${JSON.stringify(newUser)}`)
-        
-        console.log('Successfully completed operation');
+        console.log("Creating Session")
+        const sessionID = uuidv4()
+        const session = await createSession(userName, ttl, sessionID)
+        console.log('Saving User Data to Session')
+        req.session.userName = userName
+        req.session.save()
+        if(!session){
+            console.log('Error Creating Session')
+            return res.status(400).json({
+                success:false,
+                message:"Error creating session"
+            })
+        }
+
+        console.log('Successfully completed all operations');
 
         return res.status(200).json({
             success: true,
@@ -103,9 +121,15 @@ const signin = async (req, res) => {
     }
 };
 
+const signOff = async (req, res) =>{
+    const user = req.session
+    console.log(user)
+}
+
 module.exports = {
     createUser,
-    signin
+    signin,
+    signOff
 };
 
 
