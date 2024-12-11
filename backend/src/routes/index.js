@@ -7,10 +7,11 @@ const {
     signin,
     signOff
 } = require('../controllers/userRoutes');
+const { createSession, destroySession } = require('../middlewares/sessionMiddleware');
 
 router.get('/test', testServer);
-router.post('/signup', createUser)
+router.post('/signup', createSession, createUser)
 router.post('/signin', signin)
-router.post('/logout', signOff)
+router.post('/logout', destroySession, signOff)
 
 module.exports = router;

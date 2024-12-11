@@ -16,12 +16,13 @@ export default function SideBar() {
     navigate('/signin')
   };
   const printSessionData = async () =>{
-    try{
-    const data = await axios.post("http://localhost:3000/api/logout")
-    console.log(JSON.stringify(data))
-    }catch(error: any){
-      console.log(error.message)
-    }
+   try{
+    const sessionData = await axios.get('http:localhost:3000/api/sessiontester',{
+      withCredentials:true
+
+   })
+  }catch(err){
+    console.error(err.message)
   }
   return (
     <Container>

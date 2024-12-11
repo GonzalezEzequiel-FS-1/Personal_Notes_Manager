@@ -1,6 +1,9 @@
+const { v4:uuidv4 } = require('uuid');
 const createSession = async (req, res, next) => {
     // Get user from the body of the request
     const user = req.body.userName;
+    // Creating a session ID
+    const sessionID = uuidv4()
 
     // If no user is sent to the server return with a 404
     if (!user) {

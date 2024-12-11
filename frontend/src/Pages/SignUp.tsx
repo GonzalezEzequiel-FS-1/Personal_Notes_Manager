@@ -49,7 +49,8 @@ export default function SignUp() {
       },{
         headers: {
           'Content-Type': 'application/json', 
-        }
+        },
+        withCredentials:true
       }
     );
     if (response.data.success) {
@@ -59,7 +60,7 @@ export default function SignUp() {
     }
   
     } catch (err: any) {
-      setError(err.response.data.message);
+      setError(err);
     }
   };
   

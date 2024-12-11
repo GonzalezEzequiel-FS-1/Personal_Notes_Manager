@@ -1,10 +1,10 @@
 const dynamoDB = require("../db/DynamoSetUp");
 const bcrypt = require('bcryptjs')
 const User = require('../models/UserModel')
-const {checkUser} = require('../utils/checkUser'); 
+const { checkUser } = require('../utils/checkUser');
 const createSession = require("./sessionContollers/Sessions");
-const { v4:uuidv4 } = require('uuid');
-const session = require("express-session");
+const { v4: uuidv4 } = require('uuid');
+//const session = require("express-session");
 const ttl = 3600
 
 const createUser = async (req, res) => {
@@ -26,34 +26,33 @@ const createUser = async (req, res) => {
     try {
         console.log("Checking if the user exists on DB")
         const userExists = await checkUser(userName)
-        if(userExists === false){
+        if (userExists === false) {
             console.log(`User with ID ${userName} already exists`)
             return res.status(400).json({
-                success:false,
-                message:`User with ID ${userName} already exists`
+                success: false,
+                message: `User with ID ${userName} already exists`
             })
         }
-        
+
         console.log("Setting user with Dynamoose")
         const newUser = await User.create({
             name: userName,
             email: userEmail,
             password: hashedPass
         });
-        
-       await newUser.save();
-       console.log(`User Created: ${JSON.stringify(newUser)}`)
+
+        await newUser.save();
+        console.log(`User Created: ${JSON.stringify(newUser)}`)
         console.log("Creating Session")
         const sessionID = uuidv4()
         const session = await createSession(userName, ttl, sessionID)
         console.log('Saving User Data to Session')
-        req.session.userName = userName
-        req.session.save()
-        if(!session){
+
+        if (!session) {
             console.log('Error Creating Session')
             return res.status(400).json({
-                success:false,
-                message:"Error creating session"
+                success: false,
+                message: "Error creating session"
             })
         }
 
@@ -82,7 +81,7 @@ const signin = async (req, res) => {
     }
 
     try {
-        const userData = await User.get(userName);        
+        const userData = await User.get(userName);
         if (!userData) {
             return res.status(404).json({
                 success: false,
@@ -121,9 +120,25 @@ const signin = async (req, res) => {
     }
 };
 
-const signOff = async (req, res) =>{
-    const user = req.session
-    console.log(user)
+const signOff = async (req, res) => {
+    
+    if (req.session && req.session.userName) {
+        console.log("Session not deleted");
+        return res.status(400).json({
+            success: false,
+            message: 'Session not deleted'
+        })
+    }
+    try {
+        console.log('Session destroyed, redirecting');
+        return res.status(303).redirect('http://localhost:5173/signup')
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success:false,
+            error:error.message
+        })
+    }
 }
 
 module.exports = {

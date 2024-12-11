@@ -44,8 +44,8 @@ export default function SignIn() {
         navigate('/home'); 
       }
     } catch (err: any) {
-      if (err.response) {
-        setError(err.response.data.message || err.response);
+      if (err) {
+        setError(err.message);
       } else {
         setError("Network error or server unavailable");
       }
