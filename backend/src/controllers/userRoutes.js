@@ -43,18 +43,6 @@ const createUser = async (req, res) => {
 
         await newUser.save();
         console.log(`User Created: ${JSON.stringify(newUser)}`)
-        console.log("Creating Session")
-        const sessionID = uuidv4()
-        const session = await createSession(userName, ttl, sessionID)
-        console.log('Saving User Data to Session')
-
-        if (!session) {
-            console.log('Error Creating Session')
-            return res.status(400).json({
-                success: false,
-                message: "Error creating session"
-            })
-        }
 
         console.log('Successfully completed all operations');
 
@@ -72,8 +60,9 @@ const createUser = async (req, res) => {
 }
 const signin = async (req, res) => {
     const { userName, userPassword } = req.body;
-
+    console.log('Getting user Data from the requests body')
     if (!userName || !userPassword) {
+        console.log('UserData not found on the request body')
         return res.status(400).json({
             success: false,
             message: "Incomplete data provided"
@@ -81,31 +70,36 @@ const signin = async (req, res) => {
     }
 
     try {
+        console.log(' user data found ')
         const userData = await User.get(userName);
+        console.log(' checking db for user ', userName)
         if (!userData) {
+            console.log(userName,' Not found on DB  ')
             return res.status(404).json({
                 success: false,
                 message: 'User Not Found'
             });
         }
-
+        console.log(' User Found checking password ')
         const storedPassword = userData.password;
 
         if (!storedPassword) {
+            console.log(' no password provided ')
             return res.status(404).json({
                 success: false,
                 message: 'Password Not Found for User'
             });
         }
-
+        console.log(' Password found checking db ')
         const isPasswordValid = await bcrypt.compare(userPassword, storedPassword);
         if (!isPasswordValid) {
+            console.log(' Passwords did not match ')
             return res.status(400).json({
                 success: false,
                 message: 'Invalid Credentials'
             });
         }
-
+        console.log(' Passwords Matched, user authenticated ')
         return res.status(200).json({
             success: true,
             message: 'User Authenticated Successfully'
