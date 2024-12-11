@@ -17,13 +17,13 @@ export default function SideBar() {
   };
   const printSessionData = async () =>{
    try{
-    const sessionData = await axios.get('http:localhost:3000/api/sessiontester',{
+    const sessionData = await axios.get('http://localhost:3000/api/sessiontester',{
       withCredentials:true
-
    })
+   console.log(sessionData)
   }catch(err){
     console.error(err.message)
-  }
+  }}
   return (
     <Container>
       <DataCont></DataCont>
@@ -37,6 +37,7 @@ export default function SideBar() {
     </Container>
   );
 }
+
 
 const Container = styled.div`
   display: flex;

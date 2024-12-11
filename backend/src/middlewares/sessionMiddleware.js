@@ -74,8 +74,15 @@ const checkSession = async (req, res, next) => {
         // User found log the user to the console as confirmation
         console.log(`User in Session Found: >>>>>>>>${userInSession}<<<<<<<`);
 
-        // Next step in the chain
-        return next();
+        // Next step in the chain (Commented out when not used as a middleware for testing)
+        //return next();
+        
+        //To use in an actual response uncomment below:
+        return res.status(200).json({
+            success:true,
+            message:`Session Created`,
+            user:userInSession
+        })
     } catch (error) {
         // Uncaught Errors:
         console.log(error.message);
