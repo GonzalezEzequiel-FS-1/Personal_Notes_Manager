@@ -8,12 +8,17 @@ import axios from "axios";
 export default function SideBar() {
   const navigate = useNavigate()
   const dispatch = useDispatch();
+
+  const handlePrintData = async (e: any) =>{
+    e.preventDefault();
+    const sessionData = await axios.post('http://localhost:3000/api/print')
+
+  }
   
   const handleLogout = async () => {
     console.log("clearing user");
     dispatch(clearUser())
     console.log('user cleared')
-    navigate('/signin')
   };
   const printSessionData = async () =>{
     try{
@@ -30,7 +35,7 @@ export default function SideBar() {
       <DataCont>
 
         <Button onClick={handleLogout} type="button" text="Log Out" />
-        <Button onClick={printSessionData} type="button" text="PrintData" />
+        <Button onClick={handlePrintData} type="button" text="PrintData" />
 
       </DataCont>
     </Container>

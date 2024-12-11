@@ -11,9 +11,9 @@ const { Issuer, generators } = require('openid-client');
 dotenv.config();
 
 app.use(express.json());
-
+/*
 app.use(session({
-    secret: 'some secret',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
 }));
@@ -22,10 +22,10 @@ app.use(session({
 let client;
 // Initialize OpenID Client
 async function initializeClient() {
-    const issuer = await Issuer.discover('https://cognito-idp.us-east-1.amazonaws.com/us-east-1_WYYdypKal');
+    const issuer = await Issuer.discover('https://cognito-idp.us-east-1.amazonaws.com/us-east-1_t8EFiPvGF');
     client = new issuer.Client({
-        client_id: '6a6jmjpipjtotbap17st6ejac4',
-        client_secret: '<client secret>',
+        client_id: '22hvg5bb87c51qts7085o8o7e7',
+        client_secret: process.env.COGNITO_CLIENT_SECRET,
         redirect_uris: ['http://localhost:5173/home'],
         response_types: ['code']
     });
@@ -49,8 +49,8 @@ app.get('/login', (req, res) => {
 
     res.redirect(authUrl);
 });
+*/
 
-/*
 app.use(session({
     secret : process.env.SESSION_SECRET,
     resave : false,
@@ -68,7 +68,7 @@ app.use(session({
         secure : false
     }
 }))
-*/
+/*
 // Helper function to get the path from the URL. Example: "http://localhost/hello" returns "/hello"
 function getPathFromURL(urlString) {
     try {
@@ -101,7 +101,7 @@ app.get(getPathFromURL('http://localhost:5173/home'), async (req, res) => {
         res.redirect('/');
     }
 });
-
+*/
 
 const PORT = process.env.PORT || 3000;
 
@@ -111,6 +111,7 @@ app.use(cors({
     origin: 'http://localhost:5173', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'], 
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials:true
   }));
 
 app.use("/api", routes)

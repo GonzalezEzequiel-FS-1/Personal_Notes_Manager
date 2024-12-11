@@ -51,6 +51,8 @@ export default function SignUp() {
           'Content-Type': 'application/json', 
         }
       }
+        
+      
     );
     if (response.data.success) {
       console.log('Saving Data to store')
@@ -59,7 +61,7 @@ export default function SignUp() {
     }
   
     } catch (err: any) {
-      setError(err.response.data.message);
+     setError(err.response?.data?.message || "An unexpected error occurred");
     }
   };
   

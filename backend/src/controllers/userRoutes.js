@@ -49,6 +49,7 @@ const createUser = async (req, res) => {
         console.log('Saving User Data to Session')
         req.session.userName = userName
         req.session.save()
+        console.log(`User Name on Session >>>>>>>>>> ${req.session.userName}`)
         if(!session){
             console.log('Error Creating Session')
             return res.status(400).json({
@@ -121,10 +122,39 @@ const signin = async (req, res) => {
     }
 };
 
-const signOff = async (req, res) =>{
-    const user = req.session
-    console.log(user)
-}
+const signOff = async (req, res) => {
+    try {
+        const user = req.session.name; // Obtén el usuario antes de destruir la sesión
+        console.log(`Destroying session for ${user}`);
+        
+        if (user) {
+            req.session.destroy(err => {
+                if (err) {
+                    console.error('Error destroying session:', err);
+                    return res.status(500).json({
+                        success: false,
+                        error: 'Error destroying session',
+                    });
+                }
+                res.clearCookie('connect.sid'); 
+                return res.status(302).redirect('http://localhost:5173/signup');
+            });
+        } else {
+            console.log('No active session found');
+            return res.status(400).json({
+                success: false,
+                error: 'No active session to destroy',
+            });
+        }
+    } catch (error) {
+        console.error('Error in signOff:', error.message);
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+};
+
 
 module.exports = {
     createUser,
