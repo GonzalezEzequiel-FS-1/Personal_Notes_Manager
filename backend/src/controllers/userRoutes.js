@@ -144,7 +144,7 @@ const signOff = async (req, res) => {
             }
 
             // Logging the successful session destruction
-            
+
             return res.status(200).json({
                 success: true,
                 message: "Session successfully destroyed.",
