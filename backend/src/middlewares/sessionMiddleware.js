@@ -13,6 +13,7 @@ const createSession = async (req, res, next) => {
         req.session.name = user;
         req.session.sessionID = sessionID;
         req.session.expires = Math.floor(Date.now() / 1000) + 3600;
+        req.session.isAuthenticated = true
 
         console.log("Attempting to save session:", req.session);
 

@@ -11,8 +11,8 @@ const { createSession, destroySession, checkSession } = require('../middlewares/
 
 router.get('/test', testServer);
 router.post('/signup', createSession, createUser)
-router.post('/signin', signin)
-router.post('/logout', destroySession, signOff)
+router.post('/signin',createSession, signin)
+router.get('/logout', signOff)
 // router.get('/sessiontester', (req,res)=>{
 //     console.log('Checking user in session')
 //     const user = req.session;
@@ -36,13 +36,13 @@ router.post('/logout', destroySession, signOff)
 // })
 
 router.get('/sessiontester', (req, res) => {
-    console.log('Checking user in session');
+    console.log('Checking user in session', req.session);
     
     // Ensure the session exists and has data
-    if (!req.session || Object.keys(req.session).length === 0) {
+    if (!req.session.isAuthenticated || req.session.isAuthenticated === false) {
         console.error('No user in session');
-        return res.status(400).json({
-            success: false,
+        return res.status(404).json({
+            success: true,
             message: 'No user in session',
         });
     }
@@ -55,7 +55,7 @@ router.get('/sessiontester', (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'User in session',
-            session: req.session, // Include session details in the response
+            session: req.session,
         });
     } catch (error) {
         // Handle unexpected errors

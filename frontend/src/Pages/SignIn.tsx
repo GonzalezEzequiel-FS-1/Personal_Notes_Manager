@@ -37,15 +37,18 @@ export default function SignIn() {
           'Content-Type': 'application/json',
         }
       });
-
-      if (response.data.success) {
+      console.log(response.data)
+      if (response.data.isAuthenticated === true) {
         console.log('Saving Data to store')
         dispatch(setUser({userName}));
         navigate('/home'); 
       }
     } catch (err: any) {
       if (err) {
-        setError(err.message);
+        if(err.status === 404){
+          setError("Incorrect Credentials")
+        }
+        
       } else {
         setError("Network error or server unavailable");
       }

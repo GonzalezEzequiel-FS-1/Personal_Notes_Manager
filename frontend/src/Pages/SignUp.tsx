@@ -8,10 +8,9 @@ const API_URL = "http://localhost:3000/api/signup";
 import { useDispatch } from "react-redux";
 import { setUser } from "../features/usersSlice";
 
-
 export default function SignUp() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userPass, setUserPass] = useState("");
@@ -25,10 +24,12 @@ export default function SignUp() {
     }
   };
 
-  const handleNavigateSignin=(e: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>{
-        e.preventDefault()
-        navigate('/signin')
-  }
+  const handleNavigateSignin = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    navigate("/signin");
+  };
   const submitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -39,31 +40,44 @@ export default function SignUp() {
       if (!checkPasswords()) {
         return setError("Passwords Did Not Match");
       }
-      
-      
-      
-      const response = await axios.post(`${API_URL}`, {
-        userName,
-        userEmail,
-        userPass 
-      },{
-        headers: {
-          'Content-Type': 'application/json', 
+
+      const response = await axios.post(
+        `${API_URL}`,
+        {
+          userName,
+          userEmail,
+          userPass,
         },
-        withCredentials:true
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (response.data.success) {
+        console.log("Saving Data to store");
+        console.log(response.data.isAuthenticated);
+        dispatch(setUser({ userName }));
+        navigate("/home");
       }
-    );
-    if (response.data.success) {
-      console.log('Saving Data to store')
-      dispatch(setUser({userName}));
-      navigate('/home'); 
-    }
-  
     } catch (err: any) {
       setError(err);
     }
   };
-  
+  const handleTestSession = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/sessiontester"
+      );
+      if (!response) {
+        return console.log("No Session Data on file");
+      }
+      console.log(response.data.message);
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  };
 
   return (
     <Container>
@@ -108,7 +122,16 @@ export default function SignUp() {
         />
         <ButtonContainer>
           <Button type="submit" text="Sign Up"></Button>
-          <Button onClick={handleNavigateSignin} type="button" text="Sign In"></Button>
+          <Button
+            onClick={handleNavigateSignin}
+            type="button"
+            text="Sign In"
+          ></Button>
+          <Button
+            onClick={handleTestSession}
+            type="button"
+            text="Test Session"
+          ></Button>
         </ButtonContainer>
         <Disclaimer>
           By signing up, you agree to our Terms of Service and Privacy Policy.
@@ -168,5 +191,6 @@ const ButtonContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap:1rem;
+  gap: 1rem;
 `;
+

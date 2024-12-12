@@ -9,12 +9,22 @@ export default function SideBar() {
   const navigate = useNavigate()
   const dispatch = useDispatch();
   
-  const handleLogout = async () => {
-    console.log("clearing user");
-    dispatch(clearUser())
-    console.log('user cleared')
-    navigate('/signin')
-  };
+  const handleLogout = async ()=>{
+    try{
+      const response = await axios.get('http://localhost:3000/api/logout')
+      if(!response){
+        return console.log('No Session Data on file')
+      }else{
+        if (response.data.success === true){
+          dispatch(clearUser())
+          navigate('/')
+        }
+      }
+
+    }catch(err: any){
+      console.log(err.message)
+    }
+  }
   const printSessionData = async () =>{
    try{
     const sessionData = await axios.get('http://localhost:3000/api/sessiontester',{
