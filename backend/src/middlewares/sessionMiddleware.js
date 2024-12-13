@@ -1,93 +1,68 @@
-const { v4:uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const createSession = async (req, res, next) => {
-    // Get user from the body of the request
     const user = req.body.userName;
-    // Creating a session ID
-    const sessionID = uuidv4()
+    const sessionID = uuidv4();
+    console.log(`On CreateSession Middleware user variable ${user}`)
 
-    // If no user is sent to the server return with a 404
     if (!user) {
-        console.log(`No User found in the request's body`);
-        return res.status(404).json({
-            success: false,
-            message: `No User found in the request's body`
-        });
+        console.log("No User found in the request's body");
+        return res.status(404).json({ success: false, message: "No User found in the request's body" });
     }
 
     try {
-        // Assigning user to session
-        req.session.userName = user;
+        req.session.name = user;
+        req.session.sessionID = sessionID;
+        req.session.expires = Math.floor(Date.now() / 1000) + 3600;
+        req.session.isAuthenticated = true
 
-        // Ensuring that the name was added to the session
-        if (!req.session.userName) {
-            console.log(`No user attached to session`);
-            return res.status(200).json({
-                success: false,
-                message: `No user attached to session`
-            });
-        }
+        console.log("Attempting to save session:", req.session);
 
-        // Explicitly saving session
         req.session.save((err) => {
             if (err) {
-                // If an error occurs while saving log the error
-                console.error(`Explicit error saving session:>>>>>${err.message}`);
-                return res.status(400).json({
-                    success: false,
-                    message: `Explicit error saving session`,
-                    error: err.message
-                });
+                console.error("Error saving session:", err.message);
+                return res.status(500).json({ success: false, message: "Failed to save session", error: err.message });
             }
-
-            // Logging to the console the successful creation
-            console.log(`User created: ${req.session.userName}`);
-            next(); 
-            // Proceed to the next middleware
+            console.log(`Session successfully created for user: ${user}`);
+            next(); // Proceed to next middleware
         });
     } catch (error) {
-        console.log(`Error Creating Session, Please Consult: ${error.message}`);
-        return res.status(500).json({
-            success: false,
-            message: `Error Creating Session, Please Consult: ${error.message}`
-        });
+        console.error("Error during session creation:", error.message);
+        return res.status(500).json({ success: false, message: error.message });
     }
-    // Done!
 };
 
 const checkSession = async (req, res, next) => {
-    // Set variable to store the user in session
-    const userInSession = req.session.userName;
+    console.log("Session Check Middleware invoked");
+    console.log("Session data:", req.session);
 
-    // Logging to the console that the middleware started
-    console.log("Starting Check User in Session middleware");
-
+    const userInSession = req.session.name;
     if (!userInSession) {
-        // No user found send a log to the console and return a 404
-        console.log('No user found in session');
-        return res.status(404).json({
-            success: false,
-            message: "No user found in session"
-        });
+        console.log("No user found in session");
+        return res.status(404).json({ success: false, message: "No user found in session" });
     }
-
     try {
-        // User found log the user to the console as confirmation
-        console.log(`User in Session Found: >>>>>>>>${userInSession}<<<<<<<`);
-
-        // Next step in the chain
-        return next();
+        console.log(`User in session: ${userInSession}`);
+        next()
     } catch (error) {
-        // Uncaught Errors:
-        console.log(error.message);
-        return res.status(500).json({
+        console.error(error.message)
+        return res.status(400).json({
             success: false,
-            error: error.message
-        });
+            message: error.message
+        })
     }
-    // Done!
+
+    //return res.status(200).json({ success: true, message: "User found in session", user: userInSession });
 };
 
-const destroySession = async (req, res, next) => {
+const destroySession = (req, res, next) => {
+    try {
+        console.log('Testing Middleware')
+        next()
+    } catch (error) {
+        console.error(error.message)
+    }
+}
+const destroySessiona = async (req, res, next) => {
     // Check for an active Session
     const user = req.session.userName;
 
@@ -113,10 +88,11 @@ const destroySession = async (req, res, next) => {
 
             // Logging the successful session destruction
             console.log(`Session destroyed for user: ${user}`);
-            return res.status(200).json({
-                success: true,
-                message: "Session successfully destroyed."
-            });
+            // return res.status(200).json({
+            //     success: true,
+            //     message: "Session successfully destroyed."
+            // });
+            next()
         });
     } catch (error) {
         // Catch Uncaught errors

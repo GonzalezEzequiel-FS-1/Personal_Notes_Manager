@@ -19,7 +19,7 @@ const createSession = async(name, ttl, sessionID)=>{
     })
     
     await session.save();
-    console.log(`Session for ${name} created, expires on ${expires}. Session Data ${session} `)
+    console.log(`Session for ${name} created, expires on ${expires}. Session Data ${JSON.stringify(session)} `)
     return session
 }catch(error){
     console.log(`failed to create session: ${error.message}`)

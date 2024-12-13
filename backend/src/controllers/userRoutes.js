@@ -10,7 +10,7 @@ const ttl = 3600
 const createUser = async (req, res) => {
     console.log('Checking if user name, password, and email reached the server');
     const { userName, userEmail, userPass } = req.body;
-
+    const isAuthenticated = req.session.isAuthenticated
     if (!userName || !userEmail || !userPass) {
         console.log('Incomplete User Data');
         return res.status(400).json({
@@ -43,24 +43,13 @@ const createUser = async (req, res) => {
 
         await newUser.save();
         console.log(`User Created: ${JSON.stringify(newUser)}`)
-        console.log("Creating Session")
-        const sessionID = uuidv4()
-        const session = await createSession(userName, ttl, sessionID)
-        console.log('Saving User Data to Session')
-
-        if (!session) {
-            console.log('Error Creating Session')
-            return res.status(400).json({
-                success: false,
-                message: "Error creating session"
-            })
-        }
 
         console.log('Successfully completed all operations');
 
         return res.status(200).json({
             success: true,
-            User_Data: newUser
+            User_Data: newUser,
+            isAuthenticated
         });
     } catch (error) {
         console.log(`Error creating user: ${error.stack}`);
@@ -71,9 +60,11 @@ const createUser = async (req, res) => {
     }
 }
 const signin = async (req, res) => {
+    const isAuthenticated = req.session.isAuthenticated
     const { userName, userPassword } = req.body;
-
+    console.log('Getting user Data from the requests body')
     if (!userName || !userPassword) {
+        console.log('UserData not found on the request body')
         return res.status(400).json({
             success: false,
             message: "Incomplete data provided"
@@ -81,34 +72,41 @@ const signin = async (req, res) => {
     }
 
     try {
+        console.log(' user data found ')
         const userData = await User.get(userName);
+        console.log(' checking db for user ', userName)
         if (!userData) {
+            console.log(userName, ' Not found on DB  ')
             return res.status(404).json({
                 success: false,
                 message: 'User Not Found'
             });
         }
-
+        console.log(' User Found checking password ')
         const storedPassword = userData.password;
 
         if (!storedPassword) {
+            console.log(' no password provided ')
             return res.status(404).json({
                 success: false,
                 message: 'Password Not Found for User'
             });
         }
-
+        console.log(' Password found checking db ')
         const isPasswordValid = await bcrypt.compare(userPassword, storedPassword);
         if (!isPasswordValid) {
+            console.log(' Passwords did not match ')
             return res.status(400).json({
                 success: false,
                 message: 'Invalid Credentials'
             });
         }
+        console.log(' Passwords Matched, user authenticated ')
 
         return res.status(200).json({
             success: true,
-            message: 'User Authenticated Successfully'
+            message: 'User Authenticated Successfully',
+            isAuthenticated
         });
 
     } catch (error) {
@@ -121,22 +119,54 @@ const signin = async (req, res) => {
 };
 
 const signOff = async (req, res) => {
-    
-    if (req.session && req.session.userName) {
-        console.log("Session not deleted");
-        return res.status(400).json({
+    const isAuthenticated = req.session.isAuthenticated;
+    //Check for an existing session:
+    const existingSession = req.session
+    if (!existingSession) {
+        console.log('No Session Data')
+        return res.status(404).json({
             success: false,
-            message: 'Session not deleted'
+            message: "Session Data not found"
         })
     }
+    //Log the session for troubleshooting purposes only
+    console.log('Session before Deletion: ', existingSession)
+
     try {
-        console.log('Session destroyed, redirecting');
-        return res.status(303).redirect('http://localhost:5173/signup')
+        //Attempt to destroy the session
+        req.session.destroy((err) => {
+            if (err) {
+                console.log(`An explicit error has occurred while destroying session: ${err.message}`);
+                return res.status(400).json({
+                    success: false,
+                    message: `An explicit error has occurred while destroying session: ${err.message}`
+                });
+            }
+
+            // Logging the successful session destruction
+
+            return res.status(200).json({
+                success: true,
+                message: "Session successfully destroyed.",
+                isAuthenticated
+            });
+        });
+
+        //If Session destruction fails respond with a 404
+        if (req.session && req.session.userName) {
+            console.log("Session not deleted");
+            return res.status(400).json({
+                success: false,
+                message: 'Session not deleted'
+            })
+        }
+
+
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({
-            success:false,
-            error:error.message
+            success: false,
+            error: error.message
         })
     }
 }
