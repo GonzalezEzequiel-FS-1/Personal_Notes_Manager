@@ -16,6 +16,10 @@ export default function SideBar() {
   const serverURL = "http://localhost:3000/api";
   const isUpdating = useSelector((state:RootState)=>state.update.isUpdating)
 
+  const handleNoteClick = async (title: any) =>{
+    console.log(`Note clicked: ${title}`)
+  }
+
   //Function to load the notes
   const handleGetallNotes = async () => {
     console.log(`Is Updating value before try: ${JSON.stringify(isUpdating)}`)
@@ -71,9 +75,10 @@ export default function SideBar() {
    
         <UnList>
           {allNotes.map((note: any) => (
-            <List key={note.id || note._id || Math.random()}>
-              <NoteTitle>{note.title || "Untitled"}</NoteTitle>
+            <List key={note.id || note._id}>
+              <NoteTitle onClick={()=>handleNoteClick(note.title)}>{note.title || "Untitled"}</NoteTitle>
               <NoteCont>{note.note || "No content available"}</NoteCont>
+              <Divider />
             </List>
           ))}
         </UnList>
@@ -131,6 +136,11 @@ const NoteTitle = styled.p`
   text-overflow: ellipsis;
   text-align: left;
   text-transform: capitalize;
+  cursor:pointer;
+  transition: all .5s ease-in-out;
+  &:hover{
+    color:#999999;
+  }
 `;
 
 const NoteCont = styled.p`
@@ -139,12 +149,28 @@ const NoteCont = styled.p`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  cursor:pointer;
+  transition: all .5s ease-in-out;
+  &:hover{
+    color:#999999;
+  }
 `;
-const List = styled.li``;
+const List = styled.li`
+  transition: all .5s ease-in-out;
+  &:hover{
+    background-color: #000000;
+   }
+`;
 
 const Text = styled.h1`
   color:white;
   font-size:2rem;
   overflow: hidden;
   text-align: center;
+`
+const Divider = styled.div`
+  width: 100%;
+  height:0rem;
+  border:2px solid black;
+  background-color: aliceblue;
 `

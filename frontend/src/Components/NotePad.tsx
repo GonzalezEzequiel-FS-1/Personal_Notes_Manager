@@ -9,9 +9,9 @@ import { setUpdate } from "../features/dataSlice";
 
 export default function NotePad() {
   const dispatch = useDispatch();
-
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
+
 
   const handleSaveNote = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,7 +71,11 @@ export default function NotePad() {
             value={title}
           />
         </TitleContainer>
+        <MenuBar>
+          <h1>Hello</h1>
+        </MenuBar>
         <NoteContainer>
+        
           <TextArea
             aria-label="Note"
             placeholder="Write your note here"
@@ -79,6 +83,7 @@ export default function NotePad() {
             value={note}
           />
         </NoteContainer>
+        <BottomBorder />
         <Button text="Save" type="submit" />
       </SideContainer>
     </Container>
@@ -96,16 +101,7 @@ const TitleContainer = styled.div`
   align-items: center;
   justify-content: center;
 `;
-const NoteContainer = styled.div`
-  width: 100%;
-  height: 90%;
-  background-color: #222222;
-  border-radius: 20px;
-  box-shadow: 5px 5px 5px #55555550;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  margin-bottom: 1rem;
-`;
+
 const Container = styled.div`
   height: 100%;
   display: flex;
@@ -123,6 +119,35 @@ const SideContainer = styled.form`
   height: 100%;
   width: 80%;
 `;
+
+const TitleTextArea = styled.textarea`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #00000000;
+  text-align: center;
+  border: none;
+  color: white;
+  font-size: 6rem;
+  font-weight: bold;
+  letter-spacing: 0.25rem;
+  resize: none;
+  outline: none;
+  padding:1rem;
+  &:focus {
+    border: none;
+  }
+`;
+const MenuBar = styled.div`
+  background-color: #222222;
+  width:100%;
+  padding: 1rem;
+  overflow: hidden;
+  position:relative;
+  border-radius: 20px 20px 0 0;
+`
 const TextArea = styled.textarea`
   width: 100%;
   height: 100%;
@@ -134,23 +159,24 @@ const TextArea = styled.textarea`
   letter-spacing: 0.25rem;
   resize: none;
   outline: none;
+  position:absolute;
   &:active {
     border: none;
   }
 `;
-const TitleTextArea = styled.textarea`
+
+const NoteContainer = styled.div`
   width: 100%;
-  height: 100%;
-  background-color: #00000000;
-  text-align: center;
-  border: none;
-  color: white;
-  font-size: 2rem;
-  font-weight: bold;
-  letter-spacing: 0.25rem;
-  resize: none;
-  outline: none;
-  &:focus {
-    border: none;
-  }
+  height: 90%;
+  background-color: #222222;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  position:relative;
 `;
+const BottomBorder = styled.div`
+  width:100%;
+  padding:2rem;
+  border-radius:0px 0px 20px 20px;
+  background-color: #222222;
+
+`
