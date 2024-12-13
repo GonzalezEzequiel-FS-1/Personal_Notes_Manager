@@ -1,14 +1,45 @@
 import styled from "styled-components";
 import Button from "./Button";
-import { useDispatch } from "react-redux";
-import { clearUser } from "../features/usersSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUser, selectedUser } from "../features/usersSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function SideBar() {
+  const selector = useSelector(selectedUser);
+  const userInSession = selector.userName
   const navigate = useNavigate()
   const dispatch = useDispatch();
+  const [error, setError] = useState('')
+  const [allNotes, setAllNotes] = useState([])
+  const serverURL = "http://localhost:3000/api"
   
+  //Function to load the notes
+  const handleGetallNotes = async () => {
+    try {
+      const response = await axios.get(`${serverURL}/fetchnotes/${userInSession}`, {
+        withCredentials: true,
+      });
+  
+      // Check if the response contains data
+      if (!response.data) {
+        console.log("No data in server response");
+        setError("No data in server response");
+        return;
+      }
+  
+      // Update the notes state
+      setAllNotes(response.data.notes);
+
+    } catch (err: any) {
+      console.log(err.message);
+      setError(err.message);
+    }
+  };
+  
+
+  //Function to handle the logout sequence
   const handleLogout = async ()=>{
     try{
       const response = await axios.get('http://localhost:3000/api/logout')
@@ -35,15 +66,28 @@ export default function SideBar() {
   }catch(err){
     console.error(err.message)
   }}
+  useEffect(()=>{
+    handleGetallNotes()
+  })
   return (
     <Container>
   
         <UserAvatar></UserAvatar>
 
-      <DataCont></DataCont>
+      <DataCont>
+        <UnList>
+        {allNotes.map((note: any)=>(
+          <List key={note.id}>
+            <NoteTitle>{note.title}</NoteTitle>
+            <NoteCont>{note.note}</NoteCont>
+          </List>
+        ))}
+        </UnList>
+      </DataCont>
       <DataCont>
         <Button onClick={handleLogout} type="button" text="Log Out" />
         <Button onClick={printSessionData} type="button" text="Print Session Data" />
+        <Button onClick={handleGetallNotes} type="button" text="getAllNotes" />
       </DataCont>
     </Container>
   );
@@ -89,6 +133,17 @@ const DataCont = styled.div`
 
   aspect-ratio: 1/1;
   width:90%;
+  `
 
-
+  const UnList = styled.ul`
+    
+  `
+  const NoteTitle = styled.p`
+    
+  `
+  const NoteCont = styled.p`
+    
+  `
+  const List = styled.li`
+    
   `

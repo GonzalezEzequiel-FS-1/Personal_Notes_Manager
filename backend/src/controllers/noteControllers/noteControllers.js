@@ -34,6 +34,46 @@ const createNote = async (req, res)=>{
             message:err.message
         })}
 }
+
+const getAllNotes = async (req, res) => {
+    // Extract user from query params
+    const user = req.params.user; 
+    console.log(`User in session: ${user}`);
+  
+    if (!user) {
+      console.log("No user in session");
+      return res.status(404).json({
+        success: false,
+        message: "User not found in session",
+      });
+    }
+  
+    try {
+      const userNotes = await newNote.scan("belongsTo").eq(user).exec();
+  
+      if (!userNotes || userNotes.length === 0) {
+        console.log(`No notes found for user: ${user}`);
+        return res.status(404).json({
+          success: false,
+          message: `No notes found for user ${user}`,
+        });
+      }
+  
+      console.log(`User Notes: ${JSON.stringify(userNotes)}`);
+      return res.status(200).json({
+        success: true,
+        notes: userNotes,
+      });
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    }
+  };
+  
 module.exports = {
-    createNote
+    createNote,
+    getAllNotes
 }
