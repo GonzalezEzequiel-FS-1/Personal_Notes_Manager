@@ -52,6 +52,8 @@ export default function NotePad() {
     }
   };
 
+
+
   return (
     <Container>
       <SideBar />
