@@ -5,7 +5,7 @@ import { clearUser, selectedUser } from "../features/usersSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
+import { RootState } from "../features/store";
 export default function SideBar() {
   const selector = useSelector(selectedUser);
   const userInSession = selector.userName;
@@ -14,9 +14,11 @@ export default function SideBar() {
   const [error, setError] = useState("");
   const [allNotes, setAllNotes] = useState([]);
   const serverURL = "http://localhost:3000/api";
+  const isUpdating = useSelector((state:RootState)=>state.update.isUpdating)
 
   //Function to load the notes
   const handleGetallNotes = async () => {
+    console.log(`Is Updating value before try: ${JSON.stringify(isUpdating)}`)
     try {
       const response = await axios.get(
         `${serverURL}/fetchnotes/${userInSession}`,
@@ -31,7 +33,7 @@ export default function SideBar() {
         setError("No data in server response");
         return;
       }
-
+      console.log(`Is Updating value after axios: ${JSON.stringify(isUpdating)}`)
       // Update the notes state
       setAllNotes(response.data.notes);
     } catch (err: any) {
@@ -57,27 +59,16 @@ export default function SideBar() {
     }
   };
   //  Used for debugging Session Data
-  const printSessionData = async () => {
-    try {
-      const sessionData = await axios.get(
-        "http://localhost:3000/api/sessiontester",
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(sessionData);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
   useEffect(() => {
-    handleGetallNotes();
-  }, [userInSession]);
+    handleGetallNotes()
+  },[isUpdating]);
   return (
     <Container>
-      <UserAvatar></UserAvatar>
+      <UserAvatar>
+        <Text>USER PIC</Text>
+      </UserAvatar>
 
-      <DataCont>
+   
         <UnList>
           {allNotes.map((note: any) => (
             <List key={note.id || note._id || Math.random()}>
@@ -86,14 +77,9 @@ export default function SideBar() {
             </List>
           ))}
         </UnList>
-      </DataCont>
+
       <DataCont>
         <Button onClick={handleLogout} type="button" text="Log Out" />
-        <Button
-          onClick={printSessionData}
-          type="button"
-          text="Print Session Data"
-        />
       </DataCont>
     </Container>
   );
@@ -103,7 +89,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
+  gap:2rem;
   height: 100%;
   width: 15%;
   min-width: 20rem;
@@ -117,49 +103,48 @@ const DataCont = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-
   align-items: center;
-
-  &:first-of-type {
-    height: 20%;
-    padding: 10%;
-  }
-  &:nth-of-type(2) {
-    height: 70%;
-    background-color: red;
-
-  }
-  &:nth-of-type(3) {
-    justify-content: center;
-    height: 10%;
-  }
+  gap:2rem;
 `;
 const UserAvatar = styled.div`
   border-radius: 50%;
   aspect-ratio: 1/1;
-  width: 90%;
+  width: 40%;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  background-color:  #656565;
 `;
 
 const UnList = styled.ul`
   list-style: none;
   display: flex;
   flex-direction: column;
-  background-color: blue;
-  width:100%;
+  width: 100%;
+  overflow-x: scroll;
 `;
 const NoteTitle = styled.p`
   color: #f5f5f5;
   font-size: 3rem;
- white-space: nowrap;
- text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+  text-transform: capitalize;
 `;
 
 const NoteCont = styled.p`
   color: #d0d0d0;
   font-size: 2rem;
-
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
-const List = styled.li`
+const List = styled.li``;
 
-
-`;
+const Text = styled.h1`
+  color:white;
+  font-size:2rem;
+  overflow: hidden;
+  text-align: center;
+`

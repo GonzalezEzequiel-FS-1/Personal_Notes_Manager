@@ -3,8 +3,13 @@ import SideBar from "./SideBar";
 import Button from "./Button";
 import { useState } from "react";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUpdate } from "../features/dataSlice";
+
 
 export default function NotePad() {
+  const dispatch = useDispatch();
+
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
 
@@ -40,7 +45,7 @@ export default function NotePad() {
         }
       );
       
-
+      dispatch(setUpdate(true))
 
       console.log("Note Data:", sentNote.data);
     } catch (err: unknown) {
