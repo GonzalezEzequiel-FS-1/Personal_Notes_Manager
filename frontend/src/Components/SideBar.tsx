@@ -25,24 +25,25 @@ export default function SideBar() {
       console.log(err.message)
     }
   }
-  //Used for debugging Session Data
-  // const printSessionData = async () =>{
-  //  try{
-  //   const sessionData = await axios.get('http://localhost:3000/api/sessiontester',{
-  //     withCredentials:true
-  //  })
-  //  console.log(sessionData)
-  // }catch(err){
-  //   console.error(err.message)
-  // }}
+//  Used for debugging Session Data
+  const printSessionData = async () =>{
+   try{
+    const sessionData = await axios.get('http://localhost:3000/api/sessiontester',{
+      withCredentials:true
+   })
+   console.log(sessionData)
+  }catch(err){
+    console.error(err.message)
+  }}
   return (
     <Container>
-      <DataCont>
+  
         <UserAvatar></UserAvatar>
-      </DataCont>
+
       <DataCont></DataCont>
       <DataCont>
         <Button onClick={handleLogout} type="button" text="Log Out" />
+        <Button onClick={printSessionData} type="button" text="Print Session Data" />
       </DataCont>
     </Container>
   );
@@ -53,11 +54,11 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  justify-content: space-evenly;
   height: 100%;
-  width: 20%;
-  max-width: 15rem;
-  min-width: 15rem;
+  width: 15%;
+  min-width: 20rem;
+  
   background-color: #222222;
   border-radius: 20px;
   box-shadow: 5px 5px 5px #55555550;
@@ -71,21 +72,23 @@ const DataCont = styled.div`
   align-items: center;
   
   &:first-of-type{
-    background-color: red;
+
     height:20%;
     padding:10%;
   }&:nth-of-type(2){
     height:70%;
-    background-color: white;
+
   }&:nth-of-type(3){
     justify-content: center;
     height:10%;
-    background-color: orange;
+
   }
   `
   const UserAvatar = styled.div`
-    border-radius: 50%;
-    background-color: hotpink;
-    width:100%;
-    height:100%;
+  border-radius: 50%;
+
+  aspect-ratio: 1/1;
+  width:90%;
+
+
   `

@@ -41,6 +41,7 @@ export default function SignIn() {
       if (response.data.isAuthenticated === true) {
         console.log('Saving Data to store')
         dispatch(setUser({userName}));
+        localStorage.setItem("user",userName)
         navigate('/home'); 
       }
     } catch (err: any) {

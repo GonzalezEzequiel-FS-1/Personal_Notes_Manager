@@ -8,6 +8,7 @@ const {
     signOff
 } = require('../controllers/userRoutes');
 const { createSession, destroySession, checkSession } = require('../middlewares/sessionMiddleware');
+const { createNote } = require('../controllers/noteControllers/noteControllers');
 
 router.get('/test', testServer);
 router.post('/signup', createSession, createUser)
@@ -67,5 +68,5 @@ router.get('/sessiontester', (req, res) => {
     }
 });
 
-
+router.post("/createnote", createNote)
 module.exports = router;
